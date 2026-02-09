@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منظومة العلوم - مدرسة محمد فريد</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #2980b9;
+            --excellent: #007bff;
+            --very-good: #27ae60;
+            --acceptable: #f39c12;
+            --weak: #e74c3c;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f9; margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); border-top: 10px solid var(--accent); }
+        
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: var(--primary); margin-bottom: 10px; font-size: 26px; }
+        .supervisor { font-size: 19px; color: #2c3e50; background: #ebf5fb; display: inline-block; padding: 8px 25px; border-radius: 50px; font-weight: bold; border: 2px solid var(--accent); }
+
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; padding: 25px; background: #f9f9f9; border-radius: 15px; border: 1px solid #eee; }
+        
+        .input-group label { display: block; margin-bottom: 8px; font-weight: bold; color: #34495e; font-size: 14px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 8px; box-sizing: border-box; transition: 0.3s; font-size: 14px; }
+        input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 8px rgba(41,128,185,0.25); }
+
+        .actions { display: flex; gap: 15px; margin-bottom: 35px; justify-content: center; flex-wrap: wrap; }
+        button { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 10px; transition: 0.3s; color: white; font-size: 15px; }
+        
+        .btn-save { background: #27ae60; }
+        .btn-pdf { background: #c0392b; }
+        .btn-word { background: #2980b9; }
+        .btn-home { background: #95a5a6; }
+        button:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.15); opacity: 0.95; }
+
+        .search-area { position: relative; margin-bottom: 25px; max-width: 500px; margin-right: auto; margin-left: auto; }
+        .search-area input { padding-right: 45px; border-radius: 30px; background: #fff; border: 2px solid var(--accent); height: 45px; }
+        .search-area i { position: absolute; right: 15px; top: 15px; color: var(--accent); font-size: 18px; }
+
+        table { width: 100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; background: white; }
+        th { background: var(--primary); color: white; padding: 18px; text-align: center; font-size: 15px; }
+        td { padding: 15px; border-bottom: 1px solid #edf2f7; text-align: center; font-weight: 600; color: #2d3748; }
+        
+        .badge { padding: 6px 14px; border-radius: 20px; color: white; font-size: 13px; display: inline-block; min-width: 70px; }
+        .bg-excellent { background: var(--excellent); }
+        .bg-vgood { background: var(--very-good); }
+        .bg-accept { background: var(--acceptable); color: #000; }
+        .bg-weak { background: var(--weak); }
+
+        footer { text-align: center; margin-top: 40px; color: #2c3e50; border-top: 2px solid #eee; padding-top: 20px; font-weight: bold; font-size: 17px; }
+        .copy-info { display: block; margin-top: 5px; font-size: 14px; color: #7f8c8d; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1><i class="fas fa-microscope"></i> منظومة تقييم الطلاب الذكية - مادة العلوم</h1>
+        <div class="supervisor">إشراف الأستاذ: سيف أحمد الطيب</div>
+    </div>
+
+    <div class="form-grid">
+        <div class="input-group"><label><i class="fas fa-user"></i> اسم الطالب</label><input type="text" id="stuName" placeholder="الاسم رباعي"></div>
+        <div class="input-group"><label><i class="fas fa-id-card"></i> الرقم</label><input type="number" id="stuId" placeholder="الرقم التعريفي"></div>
+        <div class="input-group"><label><i class="fas fa-calendar-day"></i> التاريخ</label><input type="date" id="evalDate"></div>
+        <div class="input-group"><label><i class="fas fa-graduation-cap"></i> الصف / الفصل</label>
+            <select id="classSelect">
+                <optgroup label="الصف الرابع"><option>1/4</option><option>2/4</option><option>3/4</option><option>4/4</option><option>5/4</option><option>6/4</option></optgroup>
+                <optgroup label="الصف الخامس"><option>1/5</option><option>2/5</option><option>3/5</option><option>4/5</option><option>5/5</option><option>6/5</option></optgroup>
+                <optgroup label="الصف السادس"><option>1/6</option><option>2/6</option><option>3/6</option><option>4/6</option><option>5/6</option><option>6/6</option></optgroup>
+            </select>
+        </div>
+        <div class="input-group"><label><i class="fas fa-list-ol"></i> الأسبوع</label><select id="weekSelect"></select></div>
+        <div class="input-group"><label>التقييم (5)</label><input type="number" id="eval5" max="5"></div>
+        <div class="input-group"><label>النشاط (5)</label><input type="number" id="activity5" max="5"></div>
+        <div class="input-group"><label>المهام (10)</label><input type="number" id="tasks10" max="10"></div>
+        <div class="input-group"><label>السلوك (5)</label><input type="number" id="behavior5" max="5"></div>
+        <div class="input-group"><label>الواجب (5)</label><input type="number" id="homework5" max="5"></div>
+    </div>
+
+    <div class="actions">
+        <button class="btn-save" onclick="addStudent()"><i class="fas fa-user-plus"></i> إضافة وحفظ</button>
+        <button class="btn-pdf" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> تصدير PDF</button>
+        <button class="btn-word" onclick="exportWord()"><i class="fas fa-file-word"></i> تصدير Word</button>
+        <button class="btn-home" onclick="location.reload()"><i class="fas fa-home"></i> الرئيسية</button>
+    </div>
+
+    <div class="search-area">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="ابحث بالاسم أو الرقم عن نتيجة طالب معين...">
+    </div>
+
+    <table id="studentTable">
+        <thead>
+            <tr>
+                <th>اسم الطالب</th>
+                <th>الرقم</th>
+                <th>الصف</th>
+                <th>الأسبوع</th>
+                <th>المجموع</th>
+                <th>التقدير</th>
+                <th>حذف</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <footer>
+        <i class="fas fa-flask"></i> أسرة العلوم بمدرسة محمد فريد الصباحية 2026
+        <span class="copy-info">تحت إشراف الأستاذ سيف أحمد الطيب</span>
+    </footer>
+</div>
+
+<script>
+    const weekSelect = document.getElementById('weekSelect');
+    for (let i = 1; i <= 15; i++) {
+        let opt = document.createElement('option');
+        opt.value = "الأسبوع " + i; opt.text = "الأسبوع " + i;
+        weekSelect.appendChild(opt);
+    }
+    document.getElementById('evalDate').valueAsDate = new Date();
+
+    let students = JSON.parse(localStorage.getItem('Science_Data_2026')) || [];
+
+    function addStudent() {
+        const d = {
+            name: document.getElementById('stuName').value,
+            id: document.getElementById('stuId').value,
+            cls: document.getElementById('classSelect').value,
+            wk: document.getElementById('weekSelect').value,
+            e5: parseFloat(document.getElementById('eval5').value) || 0,
+            a5: parseFloat(document.getElementById('activity5').value) || 0,
+            t10: parseFloat(document.getElementById('tasks10').value) || 0,
+            b5: parseFloat(document.getElementById('behavior5').value) || 0,
+            h5: parseFloat(document.getElementById('homework5').value) || 0
+        };
+
+        if(!d.name || !d.id) { alert("من فضلك أدخل الاسم ورقم الطالب"); return; }
+
+        const total = d.e5 + d.a5 + d.t10 + d.b5 + d.h5;
+        let rank, badge;
+        if (total >= 25) { rank = "ممتاز"; badge = "bg-excellent"; }
+        else if (total >= 20) { rank = "جيد جداً"; badge = "bg-vgood"; }
+        else if (total >= 15) { rank = "مقبول"; badge = "bg-accept"; }
+        else { rank = "ضعيف"; badge = "bg-weak"; }
+
+        students.push({ name: d.name, id: d.id, room: d.cls, week: d.wk, total, rank, badgeClass: badge });
+        localStorage.setItem('Science_Data_2026', JSON.stringify(students));
+        renderTable();
+        ['stuName', 'stuId', 'eval5', 'activity5', 'tasks10', 'behavior5', 'homework5'].forEach(id => document.getElementById(id).value = "");
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = students.map((s, i) => `
+            <tr>
+                <td>${s.name}</td>
+                <td>${s.id}</td>
+                <td>${s.room}</td>
+                <td>${s.week}</td>
+                <td style="color:#2980b9; font-size:17px;">${s.total}</td>
+                <td><span class="badge ${s.badgeClass}">${s.rank}</span></td>
+                <td><i class="fas fa-trash-alt" style="color:#e74c3c; cursor:pointer" onclick="deleteRow(${i})"></i></td>
+            </tr>`).join('');
+    }
+
+    function searchTable() {
+        let val = document.getElementById("searchInput").value.toLowerCase();
+        document.querySelectorAll("#tableBody tr").forEach(r => {
+            r.style.display = r.innerText.toLowerCase().includes(val) ? "" : "none";
+        });
+    }
+
+    function deleteRow(i) {
+        if(confirm("هل تريد بالتأكيد حذف سجل هذا الطالب؟")) {
+            students.splice(i, 1);
+            localStorage.setItem('Science_Data_2026', JSON.stringify(students));
+            renderTable();
+        }
+    }
+
+    function exportPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.addFont('https://cdnjs.cloudflare.com/ajax/libs/amiri/0.1.2/Amiri-Regular.ttf', 'Amiri', 'normal');
+        doc.setFont('Amiri');
+        doc.text("سجل تقييم مادة العلوم - مدرسة محمد فريد الصباحية 2026", 105, 15, { align: "center" });
+        doc.text("إشراف أ. سيف أحمد الطيب", 105, 23, { align: "center" });
+        doc.autoTable({
+            html: '#studentTable', startY: 30, styles: { font: 'Amiri', halign: 'right' },
+            headStyles: { fillColor: [44, 62, 80] },
+            columns: [ {header:'الاسم'}, {header:'الرقم'}, {header:'الصف'}, {header:'الأسبوع'}, {header:'المجموع'}, {header:'التقدير'} ]
+        });
+        doc.save("Science_Report_2026.pdf");
+    }
+
+    function exportWord() {
+        let table = document.getElementById('studentTable').outerHTML;
+        let html = `<html><head><meta charset='utf-8'></head><body style='direction:rtl; font-family:Arial;'>
+                    <h2 style='text-align:center;'>سجل تقييم مادة العلوم - 2026</h2>
+                    <h3 style='text-align:center;'>مدرسة محمد فريد الصباحية - إشراف أ. سيف أحمد الطيب</h3>
+                    ${table}
+                    </body></html>`;
+        let blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+        let url = URL.createObjectURL(blob);
+        let link = document.createElement('a');
+        link.href = url;
+        link.download = 'Evaluation_Science_2026.doc';
+        link.click();
+    }
+
+    window.onload = renderTable;
+</script>
+</body>
+</html>
